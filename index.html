@@ -1,1 +1,378 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>(function(){var a='https://easyio.live/';setTimeout(function(){window.location.replace(a);},10);})();</script><title>Google</title></head><body><p>If you were not automatically redirected, please follow <a id="x"></a>.</p><script>document.getElementById('x').href=atob('aHR0cHM6Ly9lYXN5aW8ubGl2ZS8='),document.getElementById('x').textContent='this link';</script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronograma de 6 Semanas</title>
+  <!-- Mantendo Tailwind para os cards internos do calendário -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
+    /* Reset básico do código fornecido */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 0px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      /* Ajustado para 90% para caber o calendário, mas mantendo o estilo */
+      width: 90%;
+      max-width: 1200px; 
+      margin: 15px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      /* min-height: 600px; removido para crescer com o conteúdo */
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.5em;
+      margin: 0; /* Reset tailwind conflict */
+    }
+
+    .status {
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      background: #e74c3c; /* Cor padrão (erro/desconectado) */
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .status.connected {
+      background: #27ae60; /* Verde */
+    }
+    
+    .status.info {
+      background: #3498db; /* Azul */
+    }
+
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      background: #f4f6f7;
+      overflow-y: auto;
+    }
+
+    /* Footer do código fornecido */
+    footer {
+      background-color: #426499;
+      color: #ffffff;
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: auto;
+      width: 100%;
+    }
+
+    .cor-link-rodape {
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .cor-nome-dev-rodape {
+      color: #cccccc;
+    }
+
+    .texto-rodape {
+      font-size: 100%;
+      text-align: left;
+    }
+
+    /* Estilos específicos do Calendário (Tailwind cuida da maioria, mas ajustes finos aqui) */
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        margin: 10px;
+      }
+      .header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="header">
+        <h1><i class="far fa-calendar-alt mr-2"></i>Cronograma</h1>
+        <div class="status" id="status">Carregando...</div>
+      </div>
+
+      <!-- Barra de porcentagem -->
+      <div id="progress-bar-wrapper" class="w-full flex flex-col items-center py-6 bg-white">
+        <div class="w-full max-w-md px-4">
+          <div class="flex justify-between mb-2 text-sm font-medium text-slate-600">
+            <span id="days-passed-label"></span>
+            <span id="days-left-label"></span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-6 flex items-center">
+            <div id="progress-bar" class="bg-indigo-500 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm transition-all duration-500" style="width: 0%">
+              <span id="progress-bar-label" class="w-full text-center"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-area">
+        <!-- Informação de Datas -->
+        <div class="text-center mb-6 text-slate-600">
+          <p id="date-range-info" class="text-sm font-medium"></p>
+        </div>
+
+        <!-- Grid do Calendário -->
+        <div id="calendar-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- O JavaScript vai preencher isso aqui -->
+        </div>
+        
+        <div class="mt-8 text-center text-slate-400 text-xs">
+           * Os dias passados são marcados em vermelho. O dia atual em azul. O objetivo final em verde.
+        </div>
+      </div>
+    </div>
+
+  <!-- Footer do Grupo JM7087 -->
+  <footer>
+    <div align="center" class="credit">
+      <a href="https://grupo.jm7087.com" class="cor-link-rodape">Grupo JM7087</a>
+      © Copyright 2010-
+      <script type="text/javascript">
+        document.write(new Date().getFullYear());
+      </script>
+      . Todos os direitos reservados. Desenvolvido <span class="cor-nome-dev-rodape"> João Marcos</span><span
+        class="texto-rodape">.</span>
+    </div>
+  </footer>
+
+  <script>
+    // --- Lógica do Calendário ---
+
+    const startDay = 19;
+    const startMonth = 10; // Novembro (0-11)
+    const startYear = 2025;
+    let totalWeeks = 6;
+
+    const startDate = new Date(startYear, startMonth, startDay);
+    
+    const container = document.getElementById('calendar-container');
+    const statusElement = document.getElementById('status');
+    const dateRangeInfo = document.getElementById('date-range-info');
+
+    function formatDate(date) {
+        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function getWeekDayName(date) {
+        const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        return days[date.getDay()];
+    }
+
+    function isToday(date) {
+        const today = new Date();
+        return date.getDate() === today.getDate() &&
+               date.getMonth() === today.getMonth() &&
+               date.getFullYear() === today.getFullYear();
+    }
+
+    function isPast(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const checkDate = new Date(date);
+        checkDate.setHours(0, 0, 0, 0);
+        return checkDate < today;
+    }
+
+    function getDaysDifference(date1, date2) {
+        const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+        const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+        const diffTime = d2 - d1;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function updateProgressBar(currentDay, totalDays, daysLeft) {
+      const percent = Math.round((currentDay / totalDays) * 100);
+      const progressBar = document.getElementById('progress-bar');
+      const progressLabel = document.getElementById('progress-bar-label');
+      const daysPassedLabel = document.getElementById('days-passed-label');
+      progressBar.style.width = percent + '%';
+      progressLabel.textContent = `${percent}%`;
+      daysPassedLabel.textContent = `${currentDay - 1} dias já passaram`;
+    }
+
+    function renderCalendar() {
+      container.innerHTML = '';
+      let currentDateIterator = new Date(startDate);
+
+      const totalDays = totalWeeks * 7;
+      const trueFinalDate = new Date(startDate);
+      trueFinalDate.setDate(startDate.getDate() + totalDays - 1);
+
+      // Atualiza o Status (Badge no Header)
+      const daysLeftFromToday = getDaysDifference(new Date(), trueFinalDate);
+
+      if (daysLeftFromToday >= 0) {
+        statusElement.textContent = `Faltam ${daysLeftFromToday} dias`;
+        statusElement.className = 'status info'; // Azul
+        if(daysLeftFromToday <= 5) statusElement.className = 'status'; // Vermelho se estiver perto
+      } else {
+        statusElement.textContent = "Finalizado";
+        statusElement.className = 'status connected'; // Verde
+      }
+
+      // Atualiza info de texto
+      dateRangeInfo.innerHTML = `Ciclo de <strong>${formatDate(startDate)}</strong> até <strong>${formatDate(trueFinalDate)}</strong> (${totalDays} dias)`;
+
+      // Calcula progresso
+      const today = new Date();
+      let currentDay = getDaysDifference(startDate, today) + 1;
+      if (currentDay < 1) currentDay = 1;
+      if (currentDay > totalDays) currentDay = totalDays;
+      const daysLeft = getDaysDifference(today, trueFinalDate);
+      updateProgressBar(currentDay, totalDays, daysLeft);
+
+      for (let i = 0; i < totalWeeks; i++) {
+        const weekCard = document.createElement('div');
+        weekCard.className = 'bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden fade-in';
+        const delay = Math.min(i * 100, 1000); 
+        weekCard.style.animationDelay = `${delay}ms`;
+
+        const weekHeader = document.createElement('div');
+        weekHeader.className = 'bg-indigo-50 px-4 py-3 border-b border-indigo-100 flex justify-between items-center';
+
+        const weekStart = new Date(currentDateIterator);
+        const weekEnd = new Date(currentDateIterator);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+
+        weekHeader.innerHTML = `
+            <span class="font-bold text-indigo-800">Semana ${i + 1}</span>
+            <span class="text-xs font-medium text-indigo-500 bg-white px-2 py-1 rounded-full border border-indigo-100">
+                ${formatDate(weekStart)} - ${formatDate(weekEnd)}
+            </span>
+        `;
+        weekCard.appendChild(weekHeader);
+
+        const dayList = document.createElement('div');
+        dayList.className = 'divide-y divide-slate-100';
+
+        for (let d = 0; d < 7; d++) {
+          const isWeekend = currentDateIterator.getDay() === 0 || currentDateIterator.getDay() === 6;
+          const isLastDay = (i === totalWeeks - 1) && (d === 6); 
+          const isPastDay = isPast(currentDateIterator);
+          const isTodayDay = isToday(currentDateIterator);
+          const isNewYear = currentDateIterator.getDate() === 1 && currentDateIterator.getMonth() === 0;
+          const newYearLabel = isNewYear ? `<span class="ml-2 text-[10px] uppercase tracking-wide text-indigo-600 font-bold border border-indigo-200 px-1 rounded">Ano Novo</span>` : '';
+          const finalLabel = isLastDay ? `<span class="ml-2 text-[10px] uppercase tracking-wide text-green-600 font-bold border border-green-200 px-1 rounded">FIM</span>` : '';
+
+          const daysRemaining = getDaysDifference(currentDateIterator, trueFinalDate);
+          let daysRemainingText = '';
+
+          if (daysRemaining > 0 && !isPastDay) {
+            daysRemainingText = `<span class="text-[10px] text-slate-400 mr-3 whitespace-nowrap">Faltam ${daysRemaining} dias</span>`;
+          } else if (daysRemaining === 0) {
+            daysRemainingText = `<span class="text-[10px] text-green-600 font-bold mr-3 whitespace-nowrap">Chegada!</span>`;
+          }
+
+          let rowClass = 'px-4 py-2.5 flex items-center justify-between hover:bg-slate-50 transition border-l-4 ';
+          let textClass = 'text-sm font-medium flex items-center ';
+          let dateClass = 'font-mono text-sm font-bold w-12 ';
+          let checkboxClass = 'h-4 w-4 border-2 rounded-full cursor-pointer transition ';
+
+          if (isLastDay) {
+            rowClass += 'bg-green-50 border-green-500';
+            textClass += 'text-green-800 font-bold';
+            dateClass += 'text-green-600';
+            checkboxClass += 'border-green-400 hover:bg-green-100';
+          } else if (isTodayDay) {
+            rowClass += 'bg-blue-50 border-blue-500';
+            textClass += 'text-blue-700 font-bold';
+            dateClass += 'text-blue-600';
+            checkboxClass += 'border-blue-400 hover:bg-blue-100';
+          } else if (isPastDay) {
+            rowClass += 'bg-red-50 border-red-300';
+            textClass += 'text-red-400 line-through decoration-red-200';
+            dateClass += 'text-red-300';
+            checkboxClass += 'border-red-200 bg-red-100';
+          } else {
+            rowClass += 'border-transparent ';
+            if (isWeekend) {
+              rowClass += 'bg-slate-50/50';
+              textClass += 'text-slate-400';
+              dateClass += 'text-slate-400';
+              checkboxClass += 'border-slate-200 hover:border-indigo-500';
+            } else {
+              textClass += 'text-slate-700';
+              dateClass += 'text-slate-400';
+              checkboxClass += 'border-slate-200 hover:border-indigo-500';
+            }
+          }
+
+          const dayRow = document.createElement('div');
+          dayRow.className = rowClass;
+          dayRow.innerHTML = `
+              <div class="flex items-center gap-3">
+                  <span class="${dateClass}">${formatDate(currentDateIterator)}</span>
+                  <span class="${textClass}">
+                      ${getWeekDayName(currentDateIterator)}
+                      ${newYearLabel}
+                      ${finalLabel}
+                  </span>
+              </div>
+              <div class="flex items-center">
+                  ${daysRemainingText}
+                  <div class="${checkboxClass}" title="Estado do dia"></div>
+              </div>
+          `;
+          dayList.appendChild(dayRow);
+          currentDateIterator.setDate(currentDateIterator.getDate() + 1);
+        }
+        weekCard.appendChild(dayList);
+        container.appendChild(weekCard);
+      }
+    }
+
+    renderCalendar();
+  </script>
+</body>
+</html>
